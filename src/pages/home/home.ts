@@ -10,8 +10,10 @@ import { findLast } from '@angular/compiler/src/directive_resolver';
 })
 export class HomePage {
   myInput: string;
-  favorites: Observable<any>;
+//   favorites: Observable<any>;
   data;
+  fetched;
+  apikey = "71d97bd7";
 
   	constructor(
 		public navCtrl: NavController, 
@@ -19,7 +21,7 @@ export class HomePage {
 		) {}
 
 
-  	onInput (input) {
+  	async onInput (input) {
 		// this.favorites = this.httpClient.get('http://localhost:3000/favorites.json');
 		// this.favorites.subscribe(data => {
 		// 	console.log('$$$$$', data)
@@ -29,7 +31,21 @@ export class HomePage {
 			return
 		}
 
-		this.find();
+		try {
+			let response = await this.find();
+			console.log('$$$$$', response);
+			if (response) {
+				this.data = response;
+			} else {
+				let fetched = await this.fetchMovie();
+				console.log('###', fetched)
+				if(fetched) this.fetched = fetched;
+			}
+		} catch (err) {
+			console.log(err);
+		}
+
+			
 
 		// const body = {
 		// 	title: "superman",
@@ -52,20 +68,14 @@ export class HomePage {
 
 
 	find () {
-		this.favorites = this.httpClient.get(`http://localhost:3000/favorites/find/${this.myInput}.json` );
-		this.favorites.subscribe(data => {
-			console.log('$$$$$', data)
-			if(data) {
-				this.data = data;
-			}
-		}, err=> {
-			console.log('error is ', err)
-		})		
+		const url = `http://localhost:3000/favorites/find/${this.myInput}.json`;
+		return this.httpClient.get(url).toPromise();
 	}
 
 
 	fetchMovie () {
-		
+		const url = `http://www.omdbapi.com/?apikey=${this.apikey}&t=`;
+		return this.httpClient.get(url + this.myInput).toPromise();
 	}
 
 

@@ -21,4 +21,25 @@
 		<p>rating: {{data.rating}}</p>
 		<p>id: {{data.id}}</p>
 	</ion-item>
+
+	<ion-card *ngIf="fetched" style="width:30vw; margin: auto">
+		<img src="{{fetched['Poster']}}" style="height: 400px; margin: auto"/>
+		<ion-card-content>
+			<ion-card-title>
+				{{fetched['Title']}}
+				<p>{{fetched['Year']}}</p>
+			</ion-card-title>
+			<p>
+				{{fetched['Plot']}}
+			</p>
+		</ion-card-content>
+		<ion-row>
+			<ion-col>
+				<button ion-button icon-start clear small>
+				<ion-icon name="ios-bookmark"></ion-icon>
+				<div>Save</div>
+				</button>
+			</ion-col>
+		</ion-row>		
+	</ion-card>	
 </ion-content>
