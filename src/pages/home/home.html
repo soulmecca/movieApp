@@ -16,10 +16,9 @@
 	</ion-searchbar>
 
 	<ion-item *ngIf="data">
-		<p>title: {{data.title}}</p>
+		<h1>{{data.title}}</h1>
 		<p>comment: {{data.comment}}</p>
 		<p>rating: {{data.rating}}</p>
-		<p>id: {{data.id}}</p>
 	</ion-item>
 
 	<ion-card *ngIf="fetched" style="width:30vw; margin: auto">
@@ -42,7 +41,8 @@
 			</ion-col>
 		</ion-row>		
 	</ion-card>	
-
+	<br>
+	<br>
 	<ion-item-group style="width: 50vw; margin: auto">
 		<ion-item-divider color="light">Favorites</ion-item-divider>
 		<ion-item *ngFor="let movie of movies">

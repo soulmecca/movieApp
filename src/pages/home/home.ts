@@ -48,6 +48,7 @@ export class HomePage {
 			console.log('$$$$$', response);
 			if (response) {
 				this.data = response;
+				this.fetched = null;
 			} else {
 				let fetched = await this.fetchMovie();
 				console.log('###', fetched)
@@ -67,7 +68,8 @@ export class HomePage {
 
 	find () {
 		console.log('%%%%%%', this.myInput)
-		const url = `http://localhost:3000/favorites/find/${this.myInput}.json`;
+		const input = this.makeFirstUppercase(this.myInput);
+		const url = `http://localhost:3000/favorites/find/${input}.json`;
 		return this.httpClient.get(url).toPromise();
 	}
 
@@ -87,20 +89,24 @@ export class HomePage {
 				this.onSave();			
 			} else {
 				const rating = parseInt(promptResponse.rating);
-				const comment = promptResponse.comment.toLowerCase();
-				console.log('@@@@', this.fetched)
-				const url = `http://localhost:3000/favorites.json`;
+				let comment = promptResponse.comment.toLowerCase();
+				let title = this.makeFirstUppercase(this.fetched['Title']);
+				console.log('$$$$$, ', title)
+
+				// console.log('@@@@', this.fetched)
+				// const url = `http://localhost:3000/favorites.json`;
 		
-				if(this.fetched) {
-					const movie = this.fetched;
-					const body = {
-						title: movie['Title'],
-						rating: rating,
-						comment: comment
-					}			
-					let saved = await this.httpClient.post(url, body).toPromise();
-					this.presentToast('Movie saved!');
-				}					
+				// if(this.fetched) {
+				// 	const movie = this.fetched;
+				// 	const body = {
+				// 		title: movie['Title'],
+				// 		rating: rating,
+				// 		comment: comment
+				// 	}			
+				// 	let saved = await this.httpClient.post(url, body).toPromise();
+				// 	this.presentToast('Movie saved!');
+				// 	this.retrieveAll();
+				// }					
 			}
 		} catch (err) {
 			console.log(err);
@@ -165,5 +171,14 @@ export class HomePage {
 		} catch (err) {
 			console.log(err);
 		}
+	}
+
+	makeFirstUppercase (title) {
+		let arr = title.split(' ');
+		
+		for (var i = 0; i < arr.length; i++) {
+			arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].substring(1);     
+		}
+		return arr.join(' ');
 	}
 }
