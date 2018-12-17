@@ -12,6 +12,7 @@ export class HomePage {
   myInput: string;
   data;
   fetched;
+  movies;
   apikey = "71d97bd7";
 
   	constructor(
@@ -19,12 +20,26 @@ export class HomePage {
 		public httpClient: HttpClient,
 		public alertCtrl: AlertController,
 		public toastCtrl: ToastController
-		) {}
+		) {
+			this.retrieveAll();
+		}
+
+	async retrieveAll () {
+		const url = `http://localhost:3000/favorites.json`;
+		try {	
+			let allMovie = await this.httpClient.get(url).toPromise();
+			console.log('@@@', allMovie)
+			this.movies = allMovie;
+		} catch (err) {
+			console.log(err);
+		}
+	} 
 
   	async onInput (input) {
 
 		if(this.myInput === '') {
 			this.data = null;
+			this.fetched = null;
 			return
 		}
 
@@ -46,10 +61,12 @@ export class HomePage {
 	
 	onClear  () {
 		this.data = null;
+		this.fetched = null;
 	}
 
 
 	find () {
+		console.log('%%%%%%', this.myInput)
 		const url = `http://localhost:3000/favorites/find/${this.myInput}.json`;
 		return this.httpClient.get(url).toPromise();
 	}
@@ -70,7 +87,7 @@ export class HomePage {
 				this.onSave();			
 			} else {
 				const rating = parseInt(promptResponse.rating);
-				const comment = promptResponse.comment;
+				const comment = promptResponse.comment.toLowerCase();
 				console.log('@@@@', this.fetched)
 				const url = `http://localhost:3000/favorites.json`;
 		

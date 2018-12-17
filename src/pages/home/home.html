@@ -42,4 +42,19 @@
 			</ion-col>
 		</ion-row>		
 	</ion-card>	
+
+	<ion-item-group>
+		<ion-item-divider color="light">Favorites</ion-item-divider>
+		<ion-item *ngFor="let movie of movies">
+			<h1>{{movie.title}}</h1>
+			<p>comment: {{movie.comment}}</p>
+			<p>rating: {{movie.rating}}</p>
+			
+			<button ion-button outline item-end icon-start>
+				<ion-icon name="star"></ion-icon>
+				Left Icon
+			</button>
+		</ion-item>		
+	</ion-item-group>
+
 </ion-content>
