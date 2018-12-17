@@ -6,9 +6,14 @@ import { NavController } from 'ionic-angular';
   templateUrl: 'home.html'
 })
 export class HomePage {
+  myInput: string;
 
   constructor(public navCtrl: NavController) {
 
+  }
+
+  onInput (input) {
+        
   }
 
 }
