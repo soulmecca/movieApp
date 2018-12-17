@@ -50,11 +50,10 @@
 			<p>comment: {{movie.comment}}</p>
 			<p>rating: {{movie.rating}}</p>
 			
-			<button ion-button outline item-end icon-start>
-				<ion-icon name="star"></ion-icon>
-				Left Icon
+			<button ion-button outline item-end icon-start (click)="showPrompt(movie)">
+				Update
 			</button>
-			<button ion-button color="danger" outline item-end (click)="onRemove(movie)">
+			<button ion-button outline item-end style="border-color:deeppink; color:deeppink" (click)="onRemove(movie)">
 				<ion-icon name="ios-trash"></ion-icon>
 			</button>			
 		</ion-item>		

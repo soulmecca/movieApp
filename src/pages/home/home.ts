@@ -47,6 +47,7 @@ export class HomePage {
 			let response = await this.find();
 			console.log('$$$$$', response);
 			if (response) {
+				this.presentToast(`${this.myInput} is alreay in your favorite`)
 				this.data = response;
 				this.fetched = null;
 			} else {
@@ -90,46 +91,60 @@ export class HomePage {
 			} else {
 				const rating = parseInt(promptResponse.rating);
 				let comment = promptResponse.comment.toLowerCase();
-				let title = this.makeFirstUppercase(this.fetched['Title']);
-				console.log('$$$$$, ', title)
+				let title = this.fetched['Title'];
 
-				// console.log('@@@@', this.fetched)
-				// const url = `http://localhost:3000/favorites.json`;
+				console.log('@@@@', this.fetched)
+				const url = `http://localhost:3000/favorites.json`;
 		
-				// if(this.fetched) {
-				// 	const movie = this.fetched;
-				// 	const body = {
-				// 		title: movie['Title'],
-				// 		rating: rating,
-				// 		comment: comment
-				// 	}			
-				// 	let saved = await this.httpClient.post(url, body).toPromise();
-				// 	this.presentToast('Movie saved!');
-				// 	this.retrieveAll();
-				// }					
+				if(this.fetched) {
+					const movie = this.fetched;
+					const body = {
+						title: movie['Title'],
+						rating: rating,
+						comment: comment
+					}			
+					let saved = await this.httpClient.post(url, body).toPromise();
+					this.presentToast('Movie saved!');
+					this.retrieveAll();
+				}					
 			}
 		} catch (err) {
 			console.log(err);
 		}
-		
+	}
+
+	onEdit (movie) {
 		
 	}
 
-	showPrompt() {
+	showPrompt(movie) {
+		let inputs;
+		if(movie) {
+			inputs = [
+				{
+				  name: 'rating',
+				  placeholder: 'Rating',
+				  value: movie.rating
+				}
+		  ]
+		} else {
+			inputs = [
+				{
+				  name: 'rating',
+				  placeholder: 'Rating'
+				},
+				{
+					name: 'comment',
+					placeholder: 'Comment'
+				}
+			  ]
+		}
+		
 		return new Promise((resolve, reject) => {
 			const prompt = this.alertCtrl.create({
 				title: 'Rating',
 				message: "Enter a rating from 1 to 10 and leave any comment",
-				inputs: [
-				  {
-					name: 'rating',
-					placeholder: 'Rating'
-				  },
-				  {
-					  name: 'comment',
-					  placeholder: 'Comment'
-				  }
-				],
+				inputs: inputs,
 				buttons: [
 				  {
 					text: 'Cancel',
@@ -148,7 +163,6 @@ export class HomePage {
 			  });
 			  prompt.present();
 		})
-
 	}
 
 
