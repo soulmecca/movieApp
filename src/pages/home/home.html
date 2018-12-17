@@ -11,7 +11,14 @@
 		[(ngModel)]="myInput"
 		[showCancelButton]="shouldShowCancel"
 		(ionInput)="onInput($event)"
-		(ionCancel)="onCancel($event)"
+		(ionClear)="onClear($event)"
 		debounce="500">
 	</ion-searchbar>
+
+	<ion-item *ngIf="data">
+		<p>title: {{data.title}}</p>
+		<p>comment: {{data.comment}}</p>
+		<p>rating: {{data.rating}}</p>
+		<p>id: {{data.id}}</p>
+	</ion-item>
 </ion-content>
