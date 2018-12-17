@@ -149,8 +149,21 @@ export class HomePage {
 	presentToast(message) {
 		const toast = this.toastCtrl.create({
 		  message: message,
-		  duration: 3000
+		  duration: 3000,
+		  position: 'top'
 		});
 		toast.present();
 	}	
+
+
+	async onRemove (movie) {
+		const url = `http://localhost:3000/favorites/${movie.id}.json`;
+		try {
+			let deleted = await this.httpClient.delete(url).toPromise();
+			this.presentToast('Movie deleted')
+			this.retrieveAll();
+		} catch (err) {
+			console.log(err);
+		}
+	}
 }

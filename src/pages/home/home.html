@@ -43,7 +43,7 @@
 		</ion-row>		
 	</ion-card>	
 
-	<ion-item-group>
+	<ion-item-group style="width: 50vw; margin: auto">
 		<ion-item-divider color="light">Favorites</ion-item-divider>
 		<ion-item *ngFor="let movie of movies">
 			<h1>{{movie.title}}</h1>
@@ -54,6 +54,9 @@
 				<ion-icon name="star"></ion-icon>
 				Left Icon
 			</button>
+			<button ion-button color="danger" outline item-end (click)="onRemove(movie)">
+				<ion-icon name="ios-trash"></ion-icon>
+			</button>			
 		</ion-item>		
 	</ion-item-group>
 
