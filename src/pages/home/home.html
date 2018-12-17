@@ -45,12 +45,12 @@
 	<br>
 	<ion-item-group style="width: 50vw; margin: auto">
 		<ion-item-divider color="light">Favorites</ion-item-divider>
-		<ion-item *ngFor="let movie of movies">
+		<ion-item *ngFor="let movie of movies; let i = index">
 			<h1>{{movie.title}}</h1>
 			<p>comment: {{movie.comment}}</p>
 			<p>rating: {{movie.rating}}</p>
 			
-			<button ion-button outline item-end icon-start (click)="showPrompt(movie)">
+			<button ion-button outline item-end icon-start (click)="onEdit(movie, i)">
 				Update
 			</button>
 			<button ion-button outline item-end style="border-color:deeppink; color:deeppink" (click)="onRemove(movie)">

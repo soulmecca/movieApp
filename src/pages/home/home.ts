@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, AlertController, ToastController } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
 
 
 @Component({
@@ -113,11 +112,30 @@ export class HomePage {
 		}
 	}
 
-	onEdit (movie) {
+	
+	async onEdit (movie, i) {
+		try {
+			let prompted:any = await this.showPrompt(movie);
+
+			if (prompted.rating && isNaN(prompted.rating)) {
+				this.presentToast('rating should be a number');
+				this.onEdit(movie, i);
+			} 
+			// rating is a number
+			else {
+				const url = `http://localhost:3000/favorites/${movie.id}.json`
+				let body = {rating: parseInt(prompted.rating)};
+				let edited = await this.httpClient.put(url, body).toPromise();
+				this.movies[i] = edited;
+			}
+		} catch (err) {
+			console.log(err);
+		}
+
 		
 	}
 
-	showPrompt(movie) {
+	showPrompt(movie?) {
 		let inputs;
 		if(movie) {
 			inputs = [
