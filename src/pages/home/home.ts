@@ -8,11 +8,12 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  myInput: string;
-  data;
-  fetched;
-  movies;
-  apikey = "71d97bd7";
+	myInput: string;
+	data;
+	fetched;
+	movies;
+	apikey = "71d97bd7";
+	backendUrl: string = 'http://localhost:3000/favorites';
 
   	constructor(
 		public navCtrl: NavController, 
@@ -23,17 +24,18 @@ export class HomePage {
 			this.retrieveAll();
 		}
 
+	// Get all movie data that is stored in backend	
 	async retrieveAll () {
-		const url = `http://localhost:3000/favorites.json`;
+		const url = this.backendUrl + '.json';
 		try {	
 			let allMovie = await this.httpClient.get(url).toPromise();
-			console.log('@@@', allMovie)
 			this.movies = allMovie;
 		} catch (err) {
 			console.log(err);
 		}
 	} 
 
+	// Triggered when a user enter search for a movie
   	async onInput (input) {
 
 		if(this.myInput === '') {
@@ -44,14 +46,12 @@ export class HomePage {
 
 		try {
 			let response = await this.find();
-			console.log('$$$$$', response);
 			if (response) {
-				this.presentToast(`${this.myInput} is alreay in your favorite`)
+				this.presentToast(`${this.myInput} is alreay in your favorite`);
 				this.data = response;
 				this.fetched = null;
 			} else {
 				let fetched = await this.fetchMovie();
-				console.log('###', fetched)
 				if(fetched) this.fetched = fetched;
 			}
 		} catch (err) {
@@ -67,9 +67,8 @@ export class HomePage {
 
 
 	find () {
-		console.log('%%%%%%', this.myInput)
 		const input = this.makeFirstUppercase(this.myInput);
-		const url = `http://localhost:3000/favorites/find/${input}.json`;
+		const url = this.backendUrl + `/find/${input}.json`;
 		return this.httpClient.get(url).toPromise();
 	}
 
@@ -83,17 +82,15 @@ export class HomePage {
 	async onSave () {
 		try {
 			let promptResponse:any = await this.showPrompt();
-			console.log('$$$$$$ ', promptResponse)
+			// When rating is not a number
 			if(promptResponse.rating && isNaN(promptResponse.rating)) {
 				this.presentToast('rating should be a number');
 				this.onSave();			
 			} else {
 				const rating = parseInt(promptResponse.rating);
 				let comment = promptResponse.comment.toLowerCase();
-				let title = this.fetched['Title'];
 
-				console.log('@@@@', this.fetched)
-				const url = `http://localhost:3000/favorites.json`;
+				const url = this.backendUrl + `.json`;
 		
 				if(this.fetched) {
 					const movie = this.fetched;
@@ -102,8 +99,9 @@ export class HomePage {
 						rating: rating,
 						comment: comment
 					}			
-					let saved = await this.httpClient.post(url, body).toPromise();
+					await this.httpClient.post(url, body).toPromise();
 					this.presentToast('Movie saved!');
+					this.fetched = null;
 					this.retrieveAll();
 				}					
 			}
@@ -112,7 +110,7 @@ export class HomePage {
 		}
 	}
 
-	
+
 	async onEdit (movie, i) {
 		try {
 			let prompted:any = await this.showPrompt(movie);
@@ -123,9 +121,10 @@ export class HomePage {
 			} 
 			// rating is a number
 			else {
-				const url = `http://localhost:3000/favorites/${movie.id}.json`
+				const url = this.backendUrl + `/${movie.id}.json`;
 				let body = {rating: parseInt(prompted.rating)};
 				let edited = await this.httpClient.put(url, body).toPromise();
+				this.presentToast('Movie edited');
 				this.movies[i] = edited;
 			}
 		} catch (err) {
@@ -195,9 +194,11 @@ export class HomePage {
 
 
 	async onRemove (movie) {
-		const url = `http://localhost:3000/favorites/${movie.id}.json`;
+		
+		const url = this.backendUrl + `/${movie.id}.json`;
 		try {
-			let deleted = await this.httpClient.delete(url).toPromise();
+			await this.presentConfirm();
+			await this.httpClient.delete(url).toPromise();
 			this.presentToast('Movie deleted')
 			this.retrieveAll();
 		} catch (err) {
@@ -205,12 +206,40 @@ export class HomePage {
 		}
 	}
 
+	// To make every first letter capital 
+	// Following the way omdbapi uses to store a title of a movie
 	makeFirstUppercase (title) {
 		let arr = title.split(' ');
-		
 		for (var i = 0; i < arr.length; i++) {
 			arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].substring(1);     
 		}
 		return arr.join(' ');
 	}
+
+	presentConfirm() {
+		return new Promise((resolve, reject) => {
+			let alert = this.alertCtrl.create({
+				title: 'Sure to delete?',
+				message: 'Once you delete this movie, there is no turning back.',
+				buttons: [
+				  {
+					text: 'Cancel',
+					role: 'cancel',
+					handler: () => {
+					  console.log('Cancel clicked');
+					  reject();
+					}
+				  },
+				  {
+					text: 'Delete',
+					handler: () => {
+					  	console.log('Delete clicked');
+						resolve();
+					}
+				  }
+				]
+			  });
+			  alert.present();
+		})
+	}	
 }
