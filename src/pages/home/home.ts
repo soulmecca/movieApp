@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, AlertController, ToastController } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { findLast } from '@angular/compiler/src/directive_resolver';
+
 
 @Component({
   selector: 'page-home',
@@ -10,22 +10,19 @@ import { findLast } from '@angular/compiler/src/directive_resolver';
 })
 export class HomePage {
   myInput: string;
-//   favorites: Observable<any>;
   data;
   fetched;
   apikey = "71d97bd7";
 
   	constructor(
 		public navCtrl: NavController, 
-		public httpClient: HttpClient
+		public httpClient: HttpClient,
+		public alertCtrl: AlertController,
+		public toastCtrl: ToastController
 		) {}
 
-
   	async onInput (input) {
-		// this.favorites = this.httpClient.get('http://localhost:3000/favorites.json');
-		// this.favorites.subscribe(data => {
-		// 	console.log('$$$$$', data)
-		// })
+
 		if(this.myInput === '') {
 			this.data = null;
 			return
@@ -44,21 +41,6 @@ export class HomePage {
 		} catch (err) {
 			console.log(err);
 		}
-
-			
-
-		// const body = {
-		// 	title: "superman",
-		// 	ranking: 10,
-		// 	comment: 'very good'
-		// }
-		// this.httpClient.post('http://localhost:3000/favorites.json', body)
-		// .subscribe(res => {
-		// 	console.log('#### ', res)
-		// }, err => {
-		// 	console.log('error is ', err);
-		// })
-		
 	}
 	
 	
@@ -79,4 +61,79 @@ export class HomePage {
 	}
 
 
+	async onSave () {
+		try {
+			let promptResponse:any = await this.showPrompt();
+			console.log('$$$$$$ ', promptResponse)
+			if(promptResponse.rating && isNaN(promptResponse.rating)) {
+				this.presentToast('rating should be a number');
+				this.onSave();			
+			} else {
+				const rating = parseInt(promptResponse.rating);
+				const comment = promptResponse.comment;
+				console.log('@@@@', this.fetched)
+				const url = `http://localhost:3000/favorites.json`;
+		
+				if(this.fetched) {
+					const movie = this.fetched;
+					const body = {
+						title: movie['Title'],
+						rating: rating,
+						comment: comment
+					}			
+					let saved = await this.httpClient.post(url, body).toPromise();
+					this.presentToast('Movie saved!');
+				}					
+			}
+		} catch (err) {
+			console.log(err);
+		}
+		
+		
+	}
+
+	showPrompt() {
+		return new Promise((resolve, reject) => {
+			const prompt = this.alertCtrl.create({
+				title: 'Rating',
+				message: "Enter a rating from 1 to 10 and leave any comment",
+				inputs: [
+				  {
+					name: 'rating',
+					placeholder: 'Rating'
+				  },
+				  {
+					  name: 'comment',
+					  placeholder: 'Comment'
+				  }
+				],
+				buttons: [
+				  {
+					text: 'Cancel',
+					handler: data => {
+					  console.log('Cancel clicked');
+					  reject();
+					}
+				  },
+				  {
+					text: 'Save',
+					handler: data => {
+						resolve(data);
+					}
+				  }
+				]
+			  });
+			  prompt.present();
+		})
+
+	}
+
+
+	presentToast(message) {
+		const toast = this.toastCtrl.create({
+		  message: message,
+		  duration: 3000
+		});
+		toast.present();
+	}	
 }
