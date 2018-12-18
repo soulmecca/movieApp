@@ -230,7 +230,7 @@ export class HomePage {
 		}
 	}
 
-	// To make every first letter capital 
+	// To capitalize every first letter
 	// Following the way omdbapi uses to store a title of a movie
 	makeFirstUppercase (title) {
 		let arr = title.split(' ');
