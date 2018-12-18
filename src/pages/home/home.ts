@@ -52,7 +52,12 @@ export class HomePage {
 				this.fetched = null;
 			} else {
 				let fetched = await this.fetchMovie();
-				if(fetched) this.fetched = fetched;
+				const error = fetched['Error'];
+				if(error) {
+					if (error === 'Movie not found!') this.presentToast(error);
+				} else {
+					if(fetched) this.fetched = fetched;
+				}
 			}
 		} catch (err) {
 			console.log(err);
@@ -101,7 +106,8 @@ export class HomePage {
 					}			
 					await this.httpClient.post(url, body).toPromise();
 					this.presentToast('Movie saved!');
-					this.fetched = null;
+					this.onClear();
+					this.myInput = null;
 					this.retrieveAll();
 				}					
 			}

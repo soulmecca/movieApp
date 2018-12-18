@@ -20,9 +20,10 @@
 		<p>comment: {{data.comment}}</p>
 		<p>rating: {{data.rating}}</p>
 	</ion-item>
-
+	
 	<ion-card *ngIf="fetched" style="width:30vw; margin: auto">
-		<img src="{{fetched['Poster']}}" style="height: 400px; margin: auto"/>
+		<img *ngIf = "fetched['Poster'] && fetched['Poster'] != 'N/A'" [src]="fetched['Poster']" style="height: 400px; margin: auto"/>
+		<img *ngIf = "!fetched['Poster'] || fetched['Poster'] == 'N/A'" src="https://dummyimage.com/640x360/fff/aaa" style="height: 400px; margin: auto"/>
 		<ion-card-content>
 			<ion-card-title>
 				{{fetched['Title']}}
@@ -43,7 +44,7 @@
 	</ion-card>	
 	<br>
 	<br>
-	<ion-item-group style="width: 50vw; margin: auto">
+	<ion-item-group >
 		<ion-item-divider color="light">Favorites</ion-item-divider>
 		<ion-item *ngFor="let movie of movies; let i = index">
 			<h1>{{movie.title}}</h1>
