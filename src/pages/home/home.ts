@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, AlertController, ToastController } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
+import { TitleCasePipe } from '@angular/common';
 
 
 @Component({
@@ -12,7 +13,7 @@ export class HomePage {
 	data;
 	fetched;
 	movies;
-	apikey = "71d97bd7";
+	apikey: string;
 	backendUrl: string = 'http://localhost:3000/favorites';
 
   	constructor(
@@ -22,6 +23,7 @@ export class HomePage {
 		public toastCtrl: ToastController
 		) {
 			this.retrieveAll();
+			this.getKey();
 		}
 
 	// Get all movie data that is stored in backend	
@@ -34,6 +36,18 @@ export class HomePage {
 			console.log(err);
 		}
 	} 
+
+	async getKey () {
+		try {
+			const url = 'http://localhost:3000/key.json';
+			const key = await this.httpClient.get(url).toPromise();
+		} catch (err) {
+			if(err.status === 200) {
+				if(err.error.text)
+				this.apikey = err.error.text;
+			}
+		}
+	}
 
 	// Triggered when a user enter search for a movie
   	async onInput (input) {
@@ -55,6 +69,7 @@ export class HomePage {
 				const error = fetched['Error'];
 				if(error) {
 					if (error === 'Movie not found!') this.presentToast(error);
+					this.onClear();
 				} else {
 					if(fetched) this.fetched = fetched;
 				}
