@@ -142,6 +142,7 @@ export class HomePage {
 
 	showPrompt(movie?) {
 		let inputs;
+		// when editing
 		if(movie) {
 			inputs = [
 				{
@@ -150,7 +151,9 @@ export class HomePage {
 				  value: movie.rating
 				}
 		  ]
-		} else {
+		} 
+		// when saving
+		else {
 			inputs = [
 				{
 				  name: 'rating',
